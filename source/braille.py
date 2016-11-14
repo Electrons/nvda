@@ -22,6 +22,7 @@ import api
 import textInfos
 import brailleDisplayDrivers
 import inputCore
+from validate import VdtValueTooSmallError
 
 #: The directory in which liblouis braille tables are located.
 TABLES_DIR = r"louis\tables"
@@ -1525,7 +1526,11 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		self._displayWithCursor()
 		if self._cursorPos is None or not showCursor:
 			return
-		blinkRate = config.conf["braille"]["cursorBlinkRate"]
+		minBlinkRate = 200 # There is no way to query these values from the config
+		try:
+			blinkRate = config.conf["braille"]["cursorBlinkRate"]
+		except VdtValueTooSmallError as e:
+			blinkRate = minBlinkRate
 		if blinkRate:
 			self._cursorBlinkTimer = wx.PyTimer(self._blink)
 			self._cursorBlinkTimer.Start(blinkRate)

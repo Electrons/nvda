@@ -38,6 +38,7 @@ except RuntimeError:
 	updateCheck = None
 import inputCore
 import nvdaControls
+from validate import VdtValueTooSmallError
 
 class SettingsDialog(wx.Dialog):
 	"""A settings dialog.
@@ -1530,9 +1531,15 @@ class BrailleSettingsDialog(SettingsDialog):
 
 		# Translators: The label for a setting in braille settings to change cursor blink rate in milliseconds (1 second is 1000 milliseconds).
 		cursorBlinkRateLabelText = _("Cursor blink rate (ms)")
+		minBlinkRate = 200 # There is no way to query these values from the config
+		maxBlinkRate = 2000
+		try:
+			blinkRate = config.conf["braille"]["cursorBlinkRate"]
+		except VdtValueTooSmallError as e:
+			blinkRate = minBlinkRate
 		self.cursorBlinkRateEdit = sHelper.addLabeledControl(cursorBlinkRateLabelText, nvdaControls.SelectOnFocusSpinCtrl,
-			min=0, max=2000,
-			initial=config.conf["braille"]["cursorBlinkRate"])
+			min=minBlinkRate, max=maxBlinkRate,
+			initial=blinkRate)
 		if not self.showCursorCheckBox.GetValue():
 			self.cursorBlinkRateEdit.Disable()
 

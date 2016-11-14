@@ -94,7 +94,7 @@ confspec = ConfigObj(StringIO(
 	inputTable = string(default=en-us-comp8.ctb)
 	expandAtCursor = boolean(default=true)
 	showCursor = boolean(default=true)
-	cursorBlinkRate = integer(default=500,min=0,max=2000)
+	cursorBlinkRate = integer(default=500,min=200,max=2000)
 	cursorShape = integer(default=192,min=1,max=255)
 	messageTimeout = integer(default=4,min=0,max=20)
 	tetherTo = string(default="focus")
@@ -926,7 +926,7 @@ class AggregatedSection(object):
 		self.profiles = profiles
 		self._cache = {}
 
-	def __getitem__(self, key):
+	def __getitem__(self, key, checkValidity=True):
 		# Try the cache first.
 		try:
 			val = self._cache[key]
@@ -958,6 +958,8 @@ class AggregatedSection(object):
 				subProfiles.append(val)
 			else:
 				# This is a setting.
+				if not checkValidity:
+					spec = None
 				return self._cacheLeaf(key, spec, val)
 		subProfiles.reverse()
 
@@ -1073,7 +1075,9 @@ class AggregatedSection(object):
 			val = self.manager.validator.check(spec, val)
 
 		try:
-			curVal = self[key]
+			# when setting the value we dont care if the existing value
+			# is not valid.
+			curVal = self.__getitem__(key, checkValidity=False)
 		except KeyError:
 			pass
 		else:
