@@ -1610,6 +1610,7 @@ class BrailleSettingsDialog(SettingsDialog):
 		config.conf["braille"]["inputTable"] = self.inputTableNames[self.inputTableList.GetSelection()]
 		config.conf["braille"]["expandAtCursor"] = self.expandAtCursorCheckBox.GetValue()
 		config.conf["braille"]["showCursor"] = self.showCursorCheckBox.GetValue()
+		config.conf["braille"]["cursorBlink"] = self.cursorBlinkCheckBox.GetValue()
 		config.conf["braille"]["cursorBlinkRate"] = self.cursorBlinkRateEdit.GetValue()
 		config.conf["braille"]["cursorShape"] = self.cursorShapes[self.shapeList.GetSelection()]
 		config.conf["braille"]["messageTimeout"] = self.messageTimeoutEdit.GetValue()
@@ -1645,7 +1646,7 @@ class BrailleSettingsDialog(SettingsDialog):
 
 	def onShowCursorChange(self, evt):
 		self.cursorBlinkCheckBox.Enable(evt.IsChecked())
-		self.cursorBlinkRateEdit.Enable(evt.IsChecked())
+		self.cursorBlinkRateEdit.Enable(evt.IsChecked() and self.cursorBlinkCheckBox.GetValue())
 		self.shapeList.Enable(evt.IsChecked())
 
 	def onBlinkCursorChange(self, evt):
