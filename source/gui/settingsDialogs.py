@@ -1529,6 +1529,14 @@ class BrailleSettingsDialog(SettingsDialog):
 		self.showCursorCheckBox.Bind(wx.EVT_CHECKBOX, self.onShowCursorChange)
 		self.showCursorCheckBox.SetValue(config.conf["braille"]["showCursor"])
 
+		# Translators: The label for a setting in braille settings to enable cursor blinking.
+		cursorBlinkLabelText = _("Blink cursor")
+		self.cursorBlinkCheckBox = sHelper.addItem(wx.CheckBox(self, label=cursorBlinkLabelText))
+		self.cursorBlinkCheckBox.Bind(wx.EVT_CHECKBOX, self.onBlinkCursorChange)
+		self.cursorBlinkCheckBox.SetValue(config.conf["braille"]["cursorBlink"])
+		if not self.showCursorCheckBox.GetValue():
+			self.cursorBlinkCheckBox.Disable()
+
 		# Translators: The label for a setting in braille settings to change cursor blink rate in milliseconds (1 second is 1000 milliseconds).
 		cursorBlinkRateLabelText = _("Cursor blink rate (ms)")
 		minBlinkRate = 200 # There is no way to query these values from the config
@@ -1540,7 +1548,7 @@ class BrailleSettingsDialog(SettingsDialog):
 		self.cursorBlinkRateEdit = sHelper.addLabeledControl(cursorBlinkRateLabelText, nvdaControls.SelectOnFocusSpinCtrl,
 			min=minBlinkRate, max=maxBlinkRate,
 			initial=blinkRate)
-		if not self.showCursorCheckBox.GetValue():
+		if not self.showCursorCheckBox.GetValue() or not self.cursorBlinkCheckBox.GetValue() :
 			self.cursorBlinkRateEdit.Disable()
 
 		# Translators: The label for a setting in braille settings to select the cursor shape.
@@ -1636,8 +1644,12 @@ class BrailleSettingsDialog(SettingsDialog):
 		self.portsList.Enable(enable)
 
 	def onShowCursorChange(self, evt):
+		self.cursorBlinkCheckBox.Enable(evt.IsChecked())
 		self.cursorBlinkRateEdit.Enable(evt.IsChecked())
 		self.shapeList.Enable(evt.IsChecked())
+
+	def onBlinkCursorChange(self, evt):
+		self.cursorBlinkRateEdit.Enable(evt.IsChecked())
 
 class AddSymbolDialog(wx.Dialog):
 
