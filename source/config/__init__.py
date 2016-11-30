@@ -364,7 +364,7 @@ class ConfigManager(object):
 	def _initBaseConf(self, factoryDefaults=False):
 		fn = os.path.join(globalVars.appArgs.configPath, "nvda.ini")
 		if factoryDefaults:
-			profile = ConfigObj(None, indent_type="\t", encoding="UTF-8")
+			profile = self._loadConfig(None)
 			profile.filename = fn
 		else:
 			try:

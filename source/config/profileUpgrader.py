@@ -14,10 +14,10 @@ schemaVersionKey = "schemaVersion"
 
 def upgrade(profile, validator):
 	# when profile is none or empty we can still validate. It should at least have a version set.
-	log.info("Checking schema version of config")
+	log.info("Checking schema version of config:\n%s" % profile)
 	_ensureVersionProperty(profile)
 	startSchemaVersion = int(profile[schemaVersionKey])
-	log.info("current config schema version: {0}, latest: {1}".format(startSchemaVersion, latestSchemaVersion))
+	log.info("Current config schema version: {0}, latest: {1}".format(startSchemaVersion, latestSchemaVersion))
 
 	for fromVersion in xrange(startSchemaVersion, latestSchemaVersion):
 		_doConfigUpgrade(profile, fromVersion)
@@ -57,7 +57,11 @@ def _doValidation(profile, validator):
 			raise ValueError(errorString)
 
 def _ensureVersionProperty(profile):
-	if not schemaVersionKey in profile:
+	isEmptyProfile = 1 > len(profile.keys())
+	if isEmptyProfile:
+		log.info("Empty profile, triggering default schema version")
+		profile[schemaVersionKey] = latestSchemaVersion
+	elif not schemaVersionKey in profile:
 		# this must be a "before schema versions" config file.
 		log.info("No schema version found, setting to zero.")
 		profile[schemaVersionKey] = 0
