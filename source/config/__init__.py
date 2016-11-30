@@ -746,6 +746,21 @@ class ConfigManager(object):
 		self.triggersToProfiles.parent.write()
 		log.info("Profile triggers saved")
 
+	def getConfigValidationParameter(self, keyPath, validationParameter):
+		"""Get a config validation parameter
+		This can be used to get the min, max, default, or other values for a config key.
+		@param keyPath: a collection of the identifiers leading to the config key. EG ("braille", "messageTimeout")
+		@param validationParameter: the parameter to return the value for. EG "max"
+		@type validationParameter: string
+		"""
+		if not keyPath or len(keyPath) < 1:
+			raise ValueError("Key path not provided")
+
+		spec = conf.spec
+		for nextKey in keyPath:
+			spec = spec[nextKey]
+		return conf.validator._parse_with_caching(spec)[2][validationParameter]
+
 class AggregatedSection(object):
 	"""A view of a section of configuration which aggregates settings from all active profiles.
 	"""

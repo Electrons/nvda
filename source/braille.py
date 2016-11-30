@@ -1527,12 +1527,8 @@ class BrailleHandler(baseObject.AutoPropertyObject):
 		if self._cursorPos is None or not showCursor:
 			return
 		cursorShouldBlink = config.conf["braille"]["cursorBlink"]
-		minBlinkRate = 200 # There is no way to query these values from the config
-		try:
-			blinkRate = config.conf["braille"]["cursorBlinkRate"]
-		except VdtValueTooSmallError as e:
-			blinkRate = minBlinkRate
-		if cursorBlink and blinkRate:
+		blinkRate = config.conf["braille"]["cursorBlinkRate"]
+		if cursorShouldBlink and blinkRate:
 			self._cursorBlinkTimer = wx.PyTimer(self._blink)
 			self._cursorBlinkTimer.Start(blinkRate)
 
